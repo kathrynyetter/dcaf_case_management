@@ -1,4 +1,8 @@
-version: '3.1'
+version: '3.7'
+
+networks:
+  rails:
+
 services:
   webpacker:
     image: colinxfleming/dcaf_case_management:latest
@@ -7,6 +11,8 @@ services:
       - .:/usr/src/app
     ports:
       - '3035:3035'
+    networks:
+      - rails
   web:
     build:
       context: .
@@ -17,13 +23,18 @@ services:
       - .:/usr/src/app
     ports:
       - "3000:3000"
-    links:
-      - db
     environment:
       mongohost: db
     env_file:
       - .docker/web-variables.env
+    depends_on:
+      - db
+      - webpacker
+    networks:
+      - rails
   db:
     image: mongo
     ports:
       - "27017:27017"
+    networks:
+      - rails
