@@ -4,15 +4,15 @@ networks:
   rails:
 
 services:
-  webpacker:
-    image: colinxfleming/dcaf_case_management:latest
-    command: ["./scripts/start_webpack_dev.sh"]
-    volumes:
-      - .:/usr/src/app
-    ports:
-      - '3035:3035'
-    networks:
-      - rails
+  # webpacker:
+  #   image: colinxfleming/dcaf_case_management:latest
+  #   command: ["./scripts/start_webpack_dev.sh"]
+  #   volumes:
+  #     - .:/usr/src/app
+  #   ports:
+  #     - '3035:3035'
+  #   networks:
+  #     - rails
   web:
     build:
       context: .
@@ -29,10 +29,12 @@ services:
       - .docker/web-variables.env
     depends_on:
       - db
-      - webpacker
+      # - webpacker
       - chrome
     networks:
-      - rails
+      rails:
+        aliases:
+          - rails.com
   db:
     image: mongo
     ports:
@@ -49,6 +51,8 @@ services:
       - rails
     environment:
       GRID_MAX_SESSION: 10
+    volumes:
+      - .:/usr/src/app
   chrome:
     image: selenium/node-chrome
     networks:
@@ -59,3 +63,5 @@ services:
       HUB_HOST: rails-selenium
       NODE_MAX_INSTANCES: 5
       NODE_MAX_SESSION: 5
+    volumes:
+      - .:/usr/src/app
